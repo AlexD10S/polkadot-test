@@ -75,7 +75,12 @@ jobs:
       # Build and package
       - name: Build ${{ matrix.package }}
         working-directory: polkadot-sdk
-        run: cargo b --profile=production -p ${{ matrix.package == 'polkadot-parachain' && 'polkadot-parachain-bin' || matrix.package }} -F fast-runtime --target ${{ matrix.platform.target }}
+        run: |
+          if [[ "${{ matrix.package }}" == "polkadot" || "${{ matrix.package }}" == "polkadot-parachain" ]]; then
+            cargo b --profile=production -p ${{ matrix.package == 'polkadot-parachain' && 'polkadot-parachain-bin' || matrix.package }} -F fast-runtime --target ${{ matrix.platform.target }}
+          else
+            cargo b --profile=production -p ${{ matrix.package }} --target ${{ matrix.platform.target }}
+          fi
       - name: Package polkadot
         if: matrix.package == 'polkadot'
         working-directory: polkadot-sdk/${{ env.path }}
@@ -90,11 +95,6 @@ jobs:
         run: |
           ${{ env.sha }} polkadot-parachain > polkadot-parachain.sha256
           tar -czf ${{ env.archive }} polkadot-parachain polkadot-parachain.sha256
-      - name: Build frame-omni-bencher
-        if: matrix.package == 'frame-omni-bencher'
-        working-directory: polkadot-sdk
-        run: cargo b --profile=production -p frame-omni-bencher --target ${{ matrix.platform.target }}
-
       - name: Package frame-omni-bencher
         if: matrix.package == 'frame-omni-bencher'
         working-directory: polkadot-sdk/${{ env.path }}
