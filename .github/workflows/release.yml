@@ -93,7 +93,7 @@ jobs:
       - name: Build frame-omni-bencher
         if: matrix.package == 'frame-omni-bencher'
         working-directory: polkadot-sdk
-        run: cargo b --profile=production -p frame-omni-bencher -F fast-runtime --target ${{ matrix.platform.target }}
+        run: cargo b --profile=production -p frame-omni-bencher --target ${{ matrix.platform.target }}
 
       - name: Package frame-omni-bencher
         if: matrix.package == 'frame-omni-bencher'
